@@ -194,11 +194,14 @@ async function refreshInlineTrackers(lastMesId, noSave = false) {
  * @param {boolean} dryRun - If true, the function will simulate the operation without side effects.
  */
 export async function prepareMessageGeneration(type, options, dryRun) {
+	debug("prepareMessageGeneration called", { type, options, dryRun, generationMode: extensionSettings.generationMode });
 	if (!chat_metadata.tracker) chat_metadata.tracker = {};
 
 	if (extensionSettings.generationMode === generationModes.INLINE) {
+		debug("prepareMessageGeneration: Using INLINE mode");
 		await handleInlineGeneration(type);
 	} else {
+		debug("prepareMessageGeneration: Using STAGED mode");
 		await handleStagedGeneration(type, options, dryRun);
 	}
 }
@@ -273,6 +276,7 @@ async function handleInlineGeneration(type) {
  * @param {boolean} dryRun - If true, the function will simulate the operation without side effects.
  */
 async function handleStagedGeneration(type, options, dryRun) {
+	debug("handleStagedGeneration started", { type, options, dryRun });
 	const manageStopButton = $("#mes_stop").css("display") === "none";
 	if (manageStopButton) deactivateSendButtons();
 
