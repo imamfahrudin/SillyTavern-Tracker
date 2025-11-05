@@ -479,13 +479,18 @@ export async function addTrackerToMessage(mesId) {
 		if(isSystemMessage(mesId)) return;
 		const tempId = chat_metadata?.tracker?.tempTrackerId ?? null;
 		if(chat_metadata?.tracker?.cmdTrackerOverride) {
+			debug("✓ addTrackerToMessage: Using cmdTrackerOverride for mesId:", mesId);
 			saveTrackerToMessage(mesId, chat_metadata.tracker.cmdTrackerOverride);
 		} else if (tempId != null) {
-			debug("Checking for temp tracker match", { mesId, tempId });
+			debug("✓ addTrackerToMessage: Checking for temp tracker match", { mesId, tempId, isUser: chat[mesId]?.is_user, messageText: chat[mesId]?.mes?.substring(0, 50) });
 			const trackerMesId = isSystemMessage(tempId) ? getNextNonSystemMessageIndex(tempId) : tempId;
 			const tracker = chat_metadata.tracker.tempTracker;
+			debug("✓ addTrackerToMessage: Computed trackerMesId:", { trackerMesId, mesId, match: trackerMesId === mesId });
 			if (trackerMesId === mesId) {
+				debug("✓ addTrackerToMessage: Match found! Adding tracker to message", { mesId, isUser: chat[mesId]?.is_user });
 				await saveTrackerToMessage(mesId, tracker);
+			} else {
+				debug("✓ addTrackerToMessage: No match, skipping", { trackerMesId, mesId });
 			}
 		} else {
 			const previousMesId = getPreviousNonSystemMessageIndex(mesId);
