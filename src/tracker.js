@@ -277,7 +277,9 @@ async function handleInlineGeneration(type) {
  */
 async function handleStagedGeneration(type, options, dryRun) {
 	debug("handleStagedGeneration started", { type, options, dryRun });
-	if (dryRun) {
+	console.log("[Tracker] handleStagedGeneration called with dryRun:", dryRun, "type:", typeof dryRun);
+	if (dryRun === true) {
+		console.log("[Tracker] DRY RUN DETECTED - SKIPPING TRACKER GENERATION");
 		debug("handleStagedGeneration: Skipping tracker generation for dry run");
 		return;
 	}
