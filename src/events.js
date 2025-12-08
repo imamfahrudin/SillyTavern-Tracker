@@ -31,7 +31,7 @@ async function onChatChanged(args) {
 async function onGenerateAfterCommands(type, options, dryRun) {
 	if(!extensionSettings.enabled) await clearInjects();
 	const enabled = await isEnabled();
-	if (!enabled || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat"].includes(type))) {
+	if (!enabled || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat", "normal"].includes(type))) {
 		debug("GENERATION_AFTER_COMMANDS Tracker skipped", {extenstionEnabled: extensionSettings.enabled, freeToRun: enabled, selected_group, is_group_generating, type});
 		return;
 	}
