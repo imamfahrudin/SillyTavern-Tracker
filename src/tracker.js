@@ -277,6 +277,10 @@ async function handleInlineGeneration(type) {
  */
 async function handleStagedGeneration(type, options, dryRun) {
 	debug("handleStagedGeneration started", { type, options, dryRun });
+	if (dryRun) {
+		debug("handleStagedGeneration: Skipping tracker generation for dry run");
+		return;
+	}
 	const manageStopButton = $("#mes_stop").css("display") === "none";
 	if (manageStopButton) deactivateSendButtons();
 
