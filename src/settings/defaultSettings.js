@@ -527,6 +527,7 @@ export const defaultSettings = {
 
 	inlineRequestPrompt: "",
 	assistantPrefill: "",
+	userPrefill: "",
 
 	characterDescriptionTemplate: characterDescriptionTemplate,
 
@@ -558,6 +559,7 @@ export const defaultSettings = {
 
 			inlineRequestPrompt: "",
 			assistantPrefill: "",
+			userPrefill: "",
 
 			characterDescriptionTemplate: characterDescriptionTemplate,
 
@@ -579,6 +581,8 @@ export const defaultSettings = {
 			messageSummarizationRecentMessagesTemplate: messageSummarizationRecentMessagesTemplate,
 
 			inlineRequestPrompt: "",
+			assistantPrefill: "",
+			userPrefill: "",
 
 			characterDescriptionTemplate: characterDescriptionTemplate,
 

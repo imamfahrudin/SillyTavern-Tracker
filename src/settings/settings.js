@@ -116,6 +116,7 @@ function setSettingsInitialValues() {
 	$("#tracker_system_prompt").val(extensionSettings.generateSystemPrompt);
 	$("#tracker_request_prompt").val(extensionSettings.generateRequestPrompt);
 	$("#tracker_assistant_prefill").val(extensionSettings.assistantPrefill);
+	$("#tracker_user_prefill").val(extensionSettings.userPrefill);
 	$("#tracker_recent_messages").val(extensionSettings.generateRecentMessagesTemplate);
 	$("#tracker_inline_request_prompt").val(extensionSettings.inlineRequestPrompt);
 	$("#tracker_message_summarization_context_template").val(extensionSettings.messageSummarizationContextTemplate);
@@ -167,6 +168,7 @@ function registerSettingsListeners() {
 	$("#tracker_system_prompt").on("input", onSettingInputareaInput("generateSystemPrompt"));
 	$("#tracker_request_prompt").on("input", onSettingInputareaInput("generateRequestPrompt"));
 	$("#tracker_assistant_prefill").on("input", onSettingInputareaInput("assistantPrefill"));
+	$("#tracker_user_prefill").on("input", onSettingInputareaInput("userPrefill"));
 	$("#tracker_recent_messages").on("input", onSettingInputareaInput("generateRecentMessagesTemplate"));
 	$("#tracker_inline_request_prompt").on("input", onSettingInputareaInput("inlineRequestPrompt"));
 	$("#tracker_message_summarization_context_template").on("input", onSettingInputareaInput("messageSummarizationContextTemplate"));
@@ -742,6 +744,7 @@ function updateFieldVisibility(mode) {
 	// Hide all sections first
 	$("#generate_context_section").hide();
 	$("#assistant_prefill_section").hide();
+	$("#user_prefill_section").hide();
 	$("#message_summarization_section").hide();
 	$("#inline_request_section").hide();
 
@@ -751,9 +754,11 @@ function updateFieldVisibility(mode) {
 	} else if (mode === generationModes.SINGLE_STAGE) {
 		$("#generate_context_section").show();
 		$("#assistant_prefill_section").show();
+		$("#user_prefill_section").show();
 	} else if (mode === generationModes.TWO_STAGE) {
 		$("#generate_context_section").show();
 		$("#assistant_prefill_section").show();
+		$("#user_prefill_section").show();
 		$("#message_summarization_section").show();
 	}
 }

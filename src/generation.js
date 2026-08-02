@@ -128,12 +128,13 @@ async function generateSingleStageTracker(mesNum, includedFields, firstStageMess
 	const systemPrompt = getGenerateSystemPrompt(mesNum, includedFields, firstStageMessage);
 	const requestPrompt = getRequestPrompt(extensionSettings.generateRequestPrompt, mesNum, includedFields, firstStageMessage);
 	const assistantPrefill = getAssistantPrefill(includedFields);
+	const userPrefill = getUserPrefill(includedFields);
 
 	let responseLength = extensionSettings.responseLength > 0 ? extensionSettings.responseLength : null;
 
 	// Generate tracker using the AI model
-	log("Generating tracker with prompts:", { systemPrompt, requestPrompt, assistantPrefill, responseLength, mesNum });
-	const tracker = await sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseLength, assistantPrefill);
+	log("Generating tracker with prompts:", { systemPrompt, requestPrompt, assistantPrefill, userPrefill, responseLength, mesNum });
+	const tracker = await sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseLength, assistantPrefill, userPrefill);
 
 	return tracker;
 }
@@ -168,9 +169,26 @@ async function generateTwoStageTracker(mesNum, includedFields) {
  * @param {string} requestPrompt
  * @param {number|null} responseLength
  * @param {string} assistantPrefill
+ * @param {string} userPrefill
  */
-async function sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseLength, assistantPrefill = '') {
-	let tracker = await generateRaw({ prompt: requestPrompt, instructOverride: false, quietToLoud: false, systemPrompt, responseLength, prefill: assistantPrefill });
+async function sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseLength, assistantPrefill = '', userPrefill = '') {
+	// If a user prefill is set, build an explicit message array so that the user prefill
+	// message is always placed last (after the assistant prefill), with role 'user'.
+	// Otherwise, fall back to the simple string + prefill behavior.
+	let promptPayload = requestPrompt;
+	let prefillPayload = assistantPrefill;
+
+	if (userPrefill && userPrefill.trim() !== '') {
+		const messages = [{ role: "user", content: requestPrompt }];
+		if (assistantPrefill && assistantPrefill.trim() !== '') {
+			messages.push({ role: "assistant", content: assistantPrefill });
+		}
+		messages.push({ role: "user", content: userPrefill });
+		promptPayload = messages;
+		prefillPayload = '';
+	}
+
+	let tracker = await generateRaw({ prompt: promptPayload, instructOverride: false, quietToLoud: false, systemPrompt, responseLength, prefill: prefillPayload });
 	debug("Generated tracker:", { tracker });
 
 	let newTracker;
@@ -456,4 +474,29 @@ function getAssistantPrefill(includedFields) {
 	return formatTemplate(template, vars);
 }
 
+/**
+ * Retrieves the user prefill text. {{trackerFieldPrompt}}, {{trackerFormat}}
+ * This is appended as a final 'user' role message at the very end of the prompt,
+ * placed after the assistant prefill.
+ * @param {string} includedFields
+ * @returns {string} The user prefill text, or empty string if not set.
+ */
+function getUserPrefill(includedFields) {
+	const template = extensionSettings.userPrefill;
+
+	// If template is empty or undefined, return empty string (disables the user prefill)
+	if (!template || template.trim() === '') {
+		return '';
+	}
+
+	const trackerFieldPromptVal = getTrackerPrompt(extensionSettings.trackerDef, includedFields);
+	const vars = {
+		trackerFieldPrompt: trackerFieldPromptVal,
+		trackerFormat: extensionSettings.trackerFormat,
+	};
+
+	return formatTemplate(template, vars);
+}
+
 // #endregion
+
